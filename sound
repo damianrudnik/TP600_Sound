@@ -1,0 +1,82 @@
+#!/bin/bash
+#-----------------------------------------------------------------------------#
+# Script-name: Sound.sh
+#
+# starting Sound
+#
+# 
+#-----------------------------------------------------------------------------#
+
+# Sound for TP600
+
+PID=""
+USESUDO=""
+plik=$2
+
+if [ $EUID != 0 ]; then
+  USESUDO="sudo"
+fi
+
+function get_pid {
+  PID=`pidof aplay`
+}
+
+function stop {
+   get_pid
+   if [ -z $PID ]; then
+      echo "Aplay is not running."
+   else
+      echo -n "stopping Aplay .."
+      $USESUDO killall -9 aplay > /dev/null 2>&1
+   fi
+}
+
+function start {
+   get_pid
+   if [ -z $PID ]; then
+      echo  "starting Aplay"
+      $USESUDO aplay $plik > /dev/null 2>&1 &
+      echo "$plik"
+      echo "done"
+   else
+      echo "Aplay is already running, PID=$PID"
+   fi
+}
+
+function restart {
+   echo  "restarting Aplay.."
+   get_pid
+   if [ -z $PID ]; then
+      start
+   else
+      stop
+      sleep 1
+      start
+   fi
+}
+
+function status {
+   get_pid
+   if [ -z $PID ]; then
+      echo "Aplay is not running."
+   else
+      echo "Aplay is running, PID=$PID"
+   fi
+}
+
+case "$1" in
+   start)
+      start
+   ;;
+   stop)
+      stop
+   ;;
+   restart)
+      restart
+   ;;
+   status)
+      status
+   ;;
+   *)
+      echo "usage: $0 {start|stop|restart|status}"
+esac
