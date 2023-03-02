@@ -1,17 +1,15 @@
 #!/bin/bash
 #-----------------------------------------------------------------------------#
-# Script-name: Sound.sh
+# Script-name: Sound
 #
-# starting Sound
-#
-# 
+# Playing Sound on WAGO TP600 Control Panel
+# Author: Damian Rudnik WAGO
+# License : MIT
 #-----------------------------------------------------------------------------#
-
-# Sound for TP600
 
 PID=""
 USESUDO=""
-plik=$2
+file=$2
 
 if [ $EUID != 0 ]; then
   USESUDO="sudo"
@@ -35,8 +33,8 @@ function start {
    get_pid
    if [ -z $PID ]; then
       echo  "starting Aplay"
-      $USESUDO aplay $plik > /dev/null 2>&1 &
-      echo "$plik"
+      $USESUDO aplay $file > /dev/null 2>&1 &
+      echo "$file"
       echo "done"
    else
       echo "Aplay is already running, PID=$PID"
